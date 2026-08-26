@@ -8,10 +8,12 @@
 :root{--deep:#5c3a14;--yes:#ffbf00;--no:#fff1a8}
 *{box-sizing:border-box}
 html,body{min-height:100%;margin:0}
-body{font-family:"B Nazanin","BNazanin",Tahoma,Arial,sans-serif;color:var(--deep);
+body{
+font-family:"B Nazanin","BNazanin",Tahoma,Arial,sans-serif;color:var(--deep);
 background:
 radial-gradient(circle at 10% 15%,#5b3715 0 18px,#f5bd16 19px 31px,transparent 32px),
 radial-gradient(circle at 82% 22%,#684019 0 20px,#ffd43a 21px 35px,transparent 36px),
+radial-gradient(circle at 22% 82%,#654019 0 22px,#f7c82c 23px 39px,transparent 40px),
 linear-gradient(135deg,#f7e889,#f8c94f 50%,#f0b93c)}
 main{min-height:100vh;display:grid;place-items:center;padding:24px}
 .card{width:min(700px,92vw);padding:42px 26px 34px;border-radius:32px;text-align:center;background:rgba(255,251,224,.93);box-shadow:0 18px 50px rgba(77,55,0,.22)}
@@ -31,8 +33,8 @@ button{border:0;border-radius:999px;font:800 20px inherit;cursor:pointer;transit
 select{width:100%;font:inherit;font-size:17px;padding:12px 8px;border:1px solid rgba(100,70,15,.18);border-radius:12px;background:#fffdf1;color:var(--deep)}
 .month{padding:12px 8px;background:#fffdf1;border:1px solid rgba(100,70,15,.18);border-radius:12px;text-align:center;font-weight:800}
 .summary{margin:18px 0 14px;font-weight:700}
-#next,#go{background:#6f8f45;color:#fff;padding:14px 34px}
-#next:disabled,#go:disabled{opacity:.4;cursor:not-allowed}
+#next,#go{background:#6f8f45;color:white;padding:14px 34px}
+#next:disabled{opacity:.4;cursor:not-allowed}
 .food-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .food{border-radius:20px;padding:20px;background:rgba(255,255,255,.72);color:var(--deep);display:flex;flex-direction:column;gap:8px;align-items:center}
 .food .ico{font-size:40px}
@@ -87,18 +89,16 @@ select{width:100%;font:inherit;font-size:17px;padding:12px 8px;border:1px solid 
 <button class="food" type="button" data-food="کباب"><span class="ico">🍢🥩</span><span>کباب</span></button>
 </div>
 <div id="goWrap"><button id="go" type="button">بزن بریم 🚗✨</button></div>
-<div class="status" id="saveStatus"></div>
 </div>
 </section>
 </main>
 
-<script src="config.js"></script>
 <script>
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxBacBASYISw1XqoHfpNLNMaIDZn92YMYX_Y2a7iZjb2vrHS5355x-TGWEA4QWgpGbFgg/exec";
 const $=id=>document.getElementById(id);
 const s1=$("s1"),s2=$("s2"),s3=$("s3"),q=$("question"),tiny=$("tiny");
 const yes=$("yes"),no=$("no"),hint=$("hint"),day=$("day"),hour=$("hour"),minute=$("minute");
-const next=$("next"),summary=$("summary"),goWrap=$("goWrap"),go=$("go"),saveStatus=$("saveStatus");
-
+const next=$("next"),summary=$("summary"),goWrap=$("goWrap"),go=$("go");
 let noClicks=0,dateText="",timeText="",food="";
 const fa=v=>String(v).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
 const hints=["مطمئنی؟ 👀","یه بار دیگه فکر کن 😄","گزینه آره داره جذاب‌تر می‌شه…","نه دیگه خیلی کوچولو شده 😌","تقریباً فقط یه انتخاب مونده 😇","خب… دیگه «نه» نداریم 😎"];
@@ -108,71 +108,57 @@ for(let h=0;h<24;h++){let v=String(h).padStart(2,"0"),o=document.createElement("
 for(let m=0;m<60;m+=5){let v=String(m).padStart(2,"0"),o=document.createElement("option");o.value=v;o.textContent=fa(v);minute.appendChild(o)}
 
 no.addEventListener("click",()=>{
-noClicks++;
-no.style.transform=`scale(${Math.max(.08,1-noClicks*.17)})`;
-yes.style.transform=`scale(${1+noClicks*.13})`;
-hint.textContent=hints[Math.min(noClicks-1,hints.length-1)];
-if(noClicks>=6) no.style.display="none";
+ noClicks++;
+ no.style.transform=`scale(${Math.max(.08,1-noClicks*.17)})`;
+ yes.style.transform=`scale(${1+noClicks*.13})`;
+ hint.textContent=hints[Math.min(noClicks-1,hints.length-1)];
+ if(noClicks>=6) no.style.display="none";
 });
 
 yes.addEventListener("click",()=>{
-s1.style.display="none";s2.style.display="block";
-tiny.textContent="پس بریم سراغ هماهنگی 😌";q.textContent="کی وقت داری؟";
+ s1.style.display="none";s2.style.display="block";
+ tiny.textContent="پس بریم سراغ هماهنگی 😌";q.textContent="کی وقت داری؟";
 });
 
 function update(){
-if(day.value&&hour.value!==""&&minute.value!==""){
-dateText=`${fa(day.value)} شهریور`;
-timeText=`${fa(hour.value)}:${fa(minute.value)}`;
-summary.textContent=`${dateText}، ساعت ${timeText} ✨`;
-next.disabled=false;
-}else{
-next.disabled=true;
-summary.textContent="تاریخ و ساعت را انتخاب کن 🌻";
-}
+ if(day.value && hour.value!=="" && minute.value!==""){
+  dateText=`${fa(day.value)} شهریور`;
+  timeText=`${fa(hour.value)}:${fa(minute.value)}`;
+  summary.textContent=`${dateText}، ساعت ${timeText} ✨`;
+  next.disabled=false;
+ }else{
+  next.disabled=true;
+  summary.textContent="تاریخ و ساعت را انتخاب کن 🌻";
+ }
 }
 day.addEventListener("change",update);
 hour.addEventListener("change",update);
 minute.addEventListener("change",update);
 
 next.addEventListener("click",()=>{
-s2.style.display="none";s3.style.display="block";
-tiny.textContent="فقط یه انتخاب خوشمزه مونده 😋";
-q.textContent="چی سفارش میدی؟";
+ s2.style.display="none";s3.style.display="block";
+ tiny.textContent="فقط یه انتخاب خوشمزه مونده 😋";
+ q.textContent="چی سفارش میدی؟";
 });
 
 document.querySelectorAll(".food").forEach(btn=>{
-btn.addEventListener("click",()=>{
-document.querySelectorAll(".food").forEach(b=>b.classList.remove("selected"));
-btn.classList.add("selected");
-food=btn.dataset.food;
-goWrap.style.display="block";
-});
+ btn.addEventListener("click",()=>{
+  document.querySelectorAll(".food").forEach(b=>b.classList.remove("selected"));
+  btn.classList.add("selected");
+  food=btn.dataset.food;
+  goWrap.style.display="block";
+ });
 });
 
-go.addEventListener("click",async()=>{
-if(!food)return;
-const scriptUrl=window.INVITATION_CONFIG&&window.INVITATION_CONFIG.scriptUrl;
-go.disabled=true;saveStatus.textContent="در حال ثبت انتخاب‌ها…";
-try{
-const params=new URLSearchParams({
-  date:dateText,
-  time:timeText,
-  food:food,
-  save:"1",
-  _:Date.now()
-});
-const saveUrl=scriptUrl+"?"+params.toString();
-await fetch(saveUrl,{method:"GET",mode:"no-cors",cache:"no-store"});
-window.location.href="result.html?"+new URLSearchParams({
-  date:dateText,
-  time:timeText,
-  food:food
-}).toString();
-}catch(err){
-saveStatus.textContent="ثبت نتیجه انجام نشد؛ دوباره امتحان کن.";
-go.disabled=false;
-}
+go.addEventListener("click",()=>{
+ if(!food) return;
+ const params=new URLSearchParams({
+   save:"1",
+   date:dateText,
+   time:timeText,
+   food:food
+ });
+ window.location.href=SCRIPT_URL+"?"+params.toString();
 });
 </script>
 </body>
